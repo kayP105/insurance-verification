@@ -184,28 +184,31 @@ import pandas as pd
 from pdf2image import convert_from_path
 from pytesseract import Output
 from sqlalchemy.orm import sessionmaker
-# Import Document and engine from main.py
-from main import Document, engine  
 
-# --- THESE PATHS ARE CRITICAL ---
-# Make sure they are correct for your system
+# --- CRITICAL IMPORTS from main ---
+# These are needed for database interaction and model definition
+from main import Document, engine, SessionLocal 
+
+
+# --- TESSERACT/POPPLER PATHS ---
+# !!! You MUST update these paths for your specific system setup !!!
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-# Ensure this path matches where you extracted Poppler's bin folder
 poppler_bin_path = r"C:\Users\Karunya Paul\Downloads\Release-24.02.0-0\poppler-24.02.0\Library\bin"
 
 
-# --- Setup ---
+# --- NLP Setup ---
 nlp = spacy.load("en_core_web_sm")
-# Create a SessionLocal factory scoped to this module
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# --- Helper functions for our "Smart AI" ---
+
+# --- Helper Functions ---
 
 def clean_policy_no(raw_policy_no):
-    """Aggressively cleans the policy number string."""
+    """Aggressively cleans the policy number string by removing non-alphanumeric characters 
+    except spaces and dashes, to improve database lookup robustness."""
     if not raw_policy_no:
         return None
-    # Keep only letters, numbers, spaces, and hyphens
+
+    # Keep only letters, numbers, spaces, and dashes
     cleaned = re.sub(r'[^A-Z0-9 \-]+', '', str(raw_policy_no), flags=re.IGNORECASE)
     return cleaned.strip()
 
@@ -213,17 +216,18 @@ def extract_home_data(text):
     """Parses the Amica Homeowners PDF for verification data"""
     entities = {"policy_type": "Homeowners"}
     
+
     # Policy Number:
     match = re.search(r"HOMEOWNERS POLICY NO\.\s+([A-Z0-9 \-]+)", text, re.IGNORECASE)
     if match: 
-        entities["policy_no"] = clean_policy_no(match.group(1)) # Apply cleaning
+        entities["policy_no"] = clean_policy_no(match.group(1)) 
 
     # Name:
     match = re.search(r"(John A\. Smith and Jane B\. Smith)", text, re.IGNORECASE)
     if match: 
         entities["name"] = match.group(1).strip()
         
-    # Limit:
+    # Limit: Finds Personal Liability limit
     match = re.search(r"E\. Personal Liability\s.*?\$([\d,]+)\s+Each Occurrence", text, re.IGNORECASE | re.DOTALL)
     if match: entities["liability_limit"] = match.group(1).replace(",", "")
     
@@ -242,19 +246,19 @@ def extract_auto_data(text):
     # Policy Number:
     match = re.search(r"PERSONAL AUTO POLICY NO\.\s+([A-Z0-9 \-]+)", text, re.IGNORECASE)
     if match: 
-        entities["policy_no"] = clean_policy_no(match.group(1)) # Apply cleaning
+        entities["policy_no"] = clean_policy_no(match.group(1))
 
     # Name:
     match = re.search(r"NAMED INSURED\s+([^\n]+)", text, re.IGNORECASE)
     if match: 
         entities["name"] = match.group(1).strip()
-        
-    # Limit:
+ 
+    # Limit: Finds Bodily Injury limit
     match = re.search(r"Bodily Injury\s.*?\$([\d,]+)\s*each accident", text, re.IGNORECASE | re.DOTALL)
     if match: 
         entities["liability_limit"] = match.group(1).replace(",", "")
     
-    # Dates: These are not on this page, which is correct.
+    # Dates: (Not typically on this page, set to None)
     entities["effective_date"] = None
     entities["expiration_date"] = None
 
@@ -267,7 +271,7 @@ def extract_umbrella_data(text):
     # Policy Number:
     match = re.search(r"PERSONAL UMBRELLA LIABILITY POLICY NO\.\s+([A-Z0-9 \-]+)", text, re.IGNORECASE)
     if match: 
-        entities["policy_no"] = clean_policy_no(match.group(1)) # Apply cleaning
+        entities["policy_no"] = clean_policy_no(match.group(1)) 
 
     # Name:
     match = re.search(r"NAMED INSURED AND ADDRESS\s*\n\s*([^\n]+)", text, re.IGNORECASE)
@@ -287,7 +291,8 @@ def extract_umbrella_data(text):
 
     return entities
 
-# --- This is our main "AI" function ---
+
+# --- Main OCR/NLP Function ---
 
 def extract_structured_data(pdf_path):
     """
@@ -296,19 +301,19 @@ def extract_structured_data(pdf_path):
     try:
         images = convert_from_path(pdf_path, poppler_path=poppler_bin_path)
     except Exception as e:
-        print(f"Error during PDF conversion: {e}")
+        print(f"Error during PDF conversion (Poppler/File issue): {e}")
         return None
 
     full_text = ""
     for img in images:
         full_text += pytesseract.image_to_string(img) + "\n"
 
-    # Base entities found in all docs
+    # Base entities
     entities = {"company_name": None}
     if "AMICA MUTUAL" in full_text.upper():
         entities["company_name"] = "Amica Mutual Insurance Company"
 
-    # "Fingerprint" the document to see what type it is
+    # Document type "Fingerprinting"
     if "PERSONAL AUTO POLICY" in full_text:
         print("AI detected: Auto Policy")
         doc_data = extract_auto_data(full_text)
@@ -320,20 +325,24 @@ def extract_structured_data(pdf_path):
         doc_data = extract_umbrella_data(full_text)
     else:
         print("AI detected: Unknown document type")
-        return {"error": "Unknown document type", **entities} # Include company name if found
+        return {"error": "Unknown document type", **entities}
 
-    # Combine the base entities with the doc-specific entities
+
     entities.update(doc_data)
-    # Ensure all expected keys exist, even if None
+   
+    # Ensure all expected keys exist for downstream processing
     for key in ["policy_no", "name", "liability_limit", "effective_date", "expiration_date"]:
         entities.setdefault(key, None)
         
     return entities
 
 
+# --- Background Processing Task ---
+
 def process_document(doc_id: int, file_path: str):
-    """The main background task for OCR and NLP."""
-    # Use the SessionLocal factory defined in this module
+    """The main background task for OCR and NLP, updating the database."""
+   
+    # Create a new DB session for this task
     db = SessionLocal() 
     doc = db.query(Document).filter(Document.id == doc_id).first()
     
@@ -347,14 +356,18 @@ def process_document(doc_id: int, file_path: str):
         extracted_data = extract_structured_data(file_path) 
         
         if extracted_data is None:
-            raise Exception("Smart OCR failed")
+            raise Exception("Smart OCR failed to produce data (check Tesseract/Poppler setup)")
         
-        # Check if the AI returned an error (like unknown doc type)
+
         if "error" in extracted_data:
              print(f"AI Error for doc_id: {doc_id}, Error: {extracted_data['error']}")
              doc.status = "failed_ocr"
              doc.extracted_json = extracted_data
         else:
+            # Crucial: Clean the extracted policy number one last time before saving
+            if 'policy_no' in extracted_data:
+                 extracted_data['policy_no'] = clean_policy_no(extracted_data['policy_no'])
+                 
             doc.status = "processed"
             doc.extracted_json = extracted_data
             print(f"Finished processing doc_id: {doc_id}. Data: {extracted_data}")
@@ -365,6 +378,6 @@ def process_document(doc_id: int, file_path: str):
         print(f"Failed processing doc_id: {doc_id}, Error: {e}")
         
     finally:
-        # Ensure db session is always closed
+       
         db.commit()
         db.close()

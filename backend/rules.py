@@ -39,48 +39,86 @@
 
 
 
-# rules.py
+# from durable.lang import ruleset, when_all, m
+
+
+# with ruleset('insurance_workflow'):
+
+
+#     @when_all((m.verification_status == "REJECT") | (m.policy_is_active == False))
+#     def auto_reject(c):
+    
+#         print("DEBUG: Rule 'auto_reject' FIRED!")
+#         c.s.decision = "REJECT"
+#         c.s.reason = f"Policy verification failed: {getattr(c.m, 'verification_reason', 'N/A')}"
+
+    
+#     @when_all((m.verification_status != "REJECT") & (m.fraud_risk_score > 0.75))
+#     def manual_review_fraud(c):
+     
+#         print("DEBUG: Rule 'manual_review_fraud' FIRED!")
+#         c.s.decision = "MANUAL_REVIEW"
+#         c.s.reason = "High fraud risk score detected."
+
+
+#     @when_all((m.verification_status != "REJECT") & (m.is_eligible == False))
+#     def manual_review_eligibility(c):
+    
+#         print("DEBUG: Rule 'manual_review_eligibility' FIRED!")
+#         c.s.decision = "MANUAL_REVIEW"
+#         c.s.reason = f"Eligibility model flagged as ineligible (Prob: {getattr(c.m, 'ineligible_prob', 0):.2f})."
+
+   
+#     @when_all(m.verification_status == "MANUAL_REVIEW")
+#     def manual_review_flags(c):
+#         # --- ADD PRINT ---
+#         print("DEBUG: Rule 'manual_review_flags' FIRED!")
+#         c.s.decision = "MANUAL_REVIEW"
+#         c.s.reason = f"Policy flags raised: {getattr(c.m, 'verification_reason', 'Unknown reason')}"
+
+    
+#     @when_all(m.decision == None)
+#     def auto_approve(c):
+       
+#         print("DEBUG: Rule 'auto_approve' FIRED!")
+#         c.s.decision = "AUTO_APPROVE"
+#         c.s.reason = "All checks passed."
+
 from durable.lang import ruleset, when_all, m
 
-# Register the ruleset
 with ruleset('insurance_workflow'):
 
-    # Rule 1: Auto-Reject
+    # Rule 1: Auto-Reject on Policy Verification Failure or Inactive Policy
     @when_all((m.verification_status == "REJECT") | (m.policy_is_active == False))
     def auto_reject(c):
-        # --- ADD PRINT ---
         print("DEBUG: Rule 'auto_reject' FIRED!")
         c.s.decision = "REJECT"
         c.s.reason = f"Policy verification failed: {getattr(c.m, 'verification_reason', 'N/A')}"
 
-    # Rule 2: Manual Review — high fraud risk
-    @when_all((m.verification_status != "REJECT") & (m.fraud_risk_score > 0.75))
+    # Rule 2: Manual Review (High Fraud/Anomaly)
+    @when_all((m.decision == None) & (m.fraud_risk_score > 0.75))
     def manual_review_fraud(c):
-        # --- ADD PRINT ---
         print("DEBUG: Rule 'manual_review_fraud' FIRED!")
         c.s.decision = "MANUAL_REVIEW"
         c.s.reason = "High fraud risk score detected."
 
-    # Rule 3: Manual Review — failed eligibility
-    @when_all((m.verification_status != "REJECT") & (m.is_eligible == False))
+    # Rule 3: Manual Review (Eligibility Model)
+    @when_all((m.decision == None) & (m.is_eligible == False))
     def manual_review_eligibility(c):
-        # --- ADD PRINT ---
         print("DEBUG: Rule 'manual_review_eligibility' FIRED!")
         c.s.decision = "MANUAL_REVIEW"
         c.s.reason = f"Eligibility model flagged as ineligible (Prob: {getattr(c.m, 'ineligible_prob', 0):.2f})."
 
-    # Rule 4: Manual Review — flags from verification
-    @when_all(m.verification_status == "MANUAL_REVIEW")
+    # Rule 4: Manual Review (Coverage/Name Flags)
+    @when_all((m.decision == None) & (m.verification_status == "MANUAL_REVIEW"))
     def manual_review_flags(c):
-        # --- ADD PRINT ---
         print("DEBUG: Rule 'manual_review_flags' FIRED!")
         c.s.decision = "MANUAL_REVIEW"
         c.s.reason = f"Policy flags raised: {getattr(c.m, 'verification_reason', 'Unknown reason')}"
 
-    # Rule 5: Auto-Approve — no issues found
+    # Rule 5: Auto-Approve (Default/Fallback)
     @when_all(m.decision == None)
     def auto_approve(c):
-        # --- ADD PRINT ---
         print("DEBUG: Rule 'auto_approve' FIRED!")
         c.s.decision = "AUTO_APPROVE"
-        c.s.reason = "All checks passed."
+        c.s.reason = "All policy and ML checks passed."

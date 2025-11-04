@@ -1,16 +1,13 @@
-from main import SessionLocal, MockInsurerPolicy, Base, engine # <-- Add Base and engine
+from main import SessionLocal, MockInsurerPolicy, Base, engine 
 import os # <-- Add os import
 
 def seed_database():
-    # --- ADD THIS LINE ---
-    # Explicitly create tables if they don't exist (this creates the file)
+   
     Base.metadata.create_all(bind=engine) 
-    # --- END ADDITION ---
-
-    # --- Print where it thinks the DB file is ---
+    
     db_path = os.path.abspath("./project.db")
     print(f"Attempting to seed database at: {db_path}")
-    # --- END PRINT ---
+   
     
     db = SessionLocal()
     
@@ -48,10 +45,10 @@ def seed_database():
     
     try:
         db.commit()
-        print("✅ Database commit successful.")
+        print(" Database commit successful.")
     except Exception as e:
-        print(f"❌ Database commit FAILED: {e}")
-        db.rollback() # Rollback changes if commit fails
+        print(f"Database commit FAILED: {e}")
+        db.rollback() 
     finally:
         db.close()
         print("Database session closed.")

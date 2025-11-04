@@ -1,23 +1,256 @@
-.App { text-align: center; }
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* App.css - Professional, High-End Dark Theme */
+:root {
+  --primary-color: #007bff; /* Primary Blue for actions/emphasis */
+  --accent-color: #3772FF; /* Modern Blue accent */
+  --background-dark: #1f2229; /* Deep dark background */
+  --card-background: #282c34; /* Card background, slightly lighter */
+  --text-light: #f8f9fa; /* Light text */
+  --text-secondary: #a0a8b4; /* Secondary text */
+  --success-color: #28a745; /* Green for Approve */
+  --danger-color: #dc3545; /* Red for Reject */
+  --warning-color: #ffc107; /* Yellow for Manual Review */
+  --border-radius: 12px;
+  --shadow-primary: 0 8px 15px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-input, button { font-size: 1rem; margin: 10px; padding: 10px; }
-.status-checker { margin-top: 20px; width: 80%; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--background-dark);
+  color: var(--text-light);
+  min-height: 100vh;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+.App-header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.app-title {
+    color: var(--text-light);
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--card-background);
+    padding-bottom: 15px;
+}
+
+/* --- Global Feedback --- */
+.global-message {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    margin-bottom: 25px;
+}
+
+/* --- Grid Layout for Steps --- */
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background-color: var(--card-background);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, border 0.3s ease;
+    border: 1px solid #3c4048; /* Subtle border */
+}
+
+.card.active {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+.card-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--text-secondary);
+    width: 100%;
+}
+
+/* --- Input and Button Styling --- */
+input[type="number"], .claim-input {
+    background-color: var(--background-dark);
+    color: var(--text-light);
+    border: 1px solid #4a4a4a;
+    padding: 10px 15px;
+    border-radius: 6px;
+    width: 80%;
+    margin: 10px 0 20px 0;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.file-upload-label {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+.file-upload-label:hover {
+    background-color: #0056b3;
+}
+
+.file-name {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+button {
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--accent-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+button:disabled {
+    background-color: #4a4a4a;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+.status-pending_ocr { background-color: #4a4a4a; color: var(--text-light); }
+.status-processed { background-color: var(--success-color); color: white; }
+.status-failed_ocr, .status-failed { background-color: var(--danger-color); color: white; }
+
+/* --- Data Preview --- */
+.data-preview-container {
+    width: 100%;
+    margin-top: 20px;
+}
+.preview-title {
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+    font-weight: 500;
+}
 .data-preview {
-  background-color: #f0f0f0;
-  color: #333;
-  text-align: left;
-  padding: 15px;
-  border-radius: 5px;
-  max-height: 300px;
-  overflow-y: auto;
-  font-size: 0.8rem;
+    background-color: var(--background-dark);
+    color: #00ff00; /* Hacker green for code/JSON */
+    text-align: left;
+    padding: 10px;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: 1px solid #3c4048;
+}
+
+/* --- Final Decision Panel --- */
+.final-panel {
+    background-color: var(--card-background);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    margin-top: 40px;
+    box-shadow: var(--shadow-primary);
+}
+
+.final-panel h3 {
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.final-decision {
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: inline-block;
+    min-width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.decision-AUTO_APPROVE {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.decision-MANUAL_REVIEW {
+    background-color: var(--warning-color);
+    color: #333;
+}
+
+.decision-REJECT {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.reason-text {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+/* --- Full Trace Details --- */
+.full-data-details {
+    margin-top: 20px;
+    text-align: left;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+.full-data-details summary {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 0;
+    color: var(--accent-color);
+}
+.full-trace-preview {
+    max-height: 400px;
+    margin-top: 10px;
+}
+
+.error-text {
+    color: var(--danger-color);
+    font-weight: bold;
+    margin-top: 15px;
+}
+.prompt-text {
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 20px;
 }
