@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+pandas
+joblib
+shap
+plotly
+spacy
+rapidfuzz
+durable_rules
+pytesseract
+lightgbm
+pdf2image
+python-multipart
+scikit-learn
+# also download tessearct and set it to path
+# also download poppler and set to path what you trying to do??

@@ -1,21 +1,24 @@
-from main import SessionLocal, MockInsurerPolicy, Base, engine 
-import os # <-- Add os import
+import os
+from models import Base, MockInsurerPolicy
+from db import SessionLocal, engine
 
-def seed_database():
-   
+def seed_database(): 
+    
+    
     Base.metadata.create_all(bind=engine) 
     
     db_path = os.path.abspath("./project.db")
-    print(f"Attempting to seed database at: {db_path}")
+    print(f"✓ Database location: {db_path}")
    
-    
     db = SessionLocal()
     
-    print("Deleting existing data...")
+    print("Deleting existing policy data...")
     db.query(MockInsurerPolicy).delete()
-    print("Existing data deleted.")
+    print("✓ Existing data deleted.")
 
-    print("Adding new policy data...")
+    print("\nAdding new policy data with normalized policy numbers...")
+    
+    
     policies = [
         MockInsurerPolicy(
             policy_number="HO 39-001234-5", 
@@ -32,7 +35,7 @@ def seed_database():
             is_active=True
         ),
         MockInsurerPolicy(
-            policy_number="UB 50-007890-1", 
+            policy_number="UB 50-007890-1",  
             policy_holder_name="John A. Smith and Jane B. Smith", 
             coverage_type="Umbrella", 
             coverage_limit=1000000,
@@ -41,17 +44,21 @@ def seed_database():
     ]
     
     db.add_all(policies)
-    print("New data added to session.")
+    print("✓ Added 3 policies to session")
     
     try:
         db.commit()
-        print(" Database commit successful.")
+        print("\n✓✓✓ DATABASE SEEDING SUCCESSFUL ✓✓✓")
+        print("\nSeeded policies:")
+        for p in policies:
+            print(f"  • {p.policy_number} ({p.coverage_type}) - ${p.coverage_limit:,}")
     except Exception as e:
-        print(f"Database commit FAILED: {e}")
+        print(f"\n❌ DATABASE COMMIT FAILED: {e}")
         db.rollback() 
     finally:
         db.close()
-        print("Database session closed.")
+        print("\n✓ Database session closed.\n")
+
 
 if __name__ == "__main__":
     seed_database()
