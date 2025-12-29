@@ -179,7 +179,7 @@ const Landing = () => {
                 Get Started <FiArrowRight />
               </button>
 
-              <button
+              {/* <button
                 style={{
                   background: 'white',
                   color: '#0369A1',
@@ -204,7 +204,7 @@ const Landing = () => {
                 }}
               >
                 <FiPlay /> Watch Demo
-              </button>
+              </button> */}
             </div>
 
             {/* Stats Row */}
