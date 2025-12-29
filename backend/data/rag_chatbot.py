@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path='../.env') 
 
 GEMINI_SECRET_KEY = os.environ.get("GEMINI_SECRET_KEY")
-genai.configure(api_key="AIzaSyDTEB9aZej85I1sVGLofgQU_17Nc8aBF3A")  
+genai.configure(api_key="xxxxxxxx")  
 
 def build_retriever():
     backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
