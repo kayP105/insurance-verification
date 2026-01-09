@@ -1,89 +1,850 @@
-Amica Mutual Insurance Company
+2025 Global Conference in Emerging Technology (GINOTECH)
+Pune, India. May 09 - 11, 2025
 
-Lincoln, Rhode Island
+Designing an Intelligent Fraud Detection System for
+Healthcare Insurance Claims Using a Machine
+Learning Approach
 
-Page 2 of 3
+Ruhul Quddus Majumder
+Independent Researcher
+inforuhul@gmail.com
 
-CONTINUATION OF DECLARATIONS FOR PERSONAL AUTO POLICY NO. AU 40-004567-8
+Abstract—Health insurance is a valuable service that
+provides consumers with access to essential medical assistance
+during critical times. There is a substantial monetary effect
+from the complicated issue of health insurance fraud. Machine
+learning techniques have gained superiority over conventional
+methods to detect fraud because of advances in computational
+power together with the collection of large data quantities. The
+research brings a leading-edge ML method for detecting
+fraudulent claims within healthcare insurance systems. To solve
+class imbalance, the study uses a Kaggle dataset and applies
+strong preprocessing techniques such as feature scaling, data
+cleaning, and synthetic data balancing using ADASYN. Feature
+selection is performed using mutual information to enhance
+model efficiency. A fraud detection assessment involves
+evaluation of Extra Trees and ‘Random Forest’ and ‘Decision
+Tree’ classification models for the purpose of assessing ML
+models' efficacy in detecting fraud using the fl-score(f-
+measure), recall(rec), accuracy(acc), precision (prec), and ROC
+measures. The findings show that the Extra Trees Classifier
+outperforms the current logistic regression and XGBoost
+classifiers, as well as Random Forest (95%) and Decision Tree
+(93%), with the greatest accuracy of 96%. The results of the
+study highlight the value of ensemble learning strategies in
+raising the precision of fraud detection and bolstering the
+dependability of processing medical insurance claims.
 
-NAMED INSURED john A. Smith and Jane B. Smith
+Keywords—Health Insurance Fraud Detection, Insurance
+Claim, Machine Learning, Data Balancing, Feature Engineering,
+ADASYN.
 
-. LIABILITY
-Bodily Injury
+I. INTRODUCTION
 
-100,000
-300,000
+A health insurance policy is a kind of general insurance
+that helps pay for medical care and surgical procedures for
+those who are covered, who might be individuals, families, or
+groups [1]. Individuals, families, or groups pay a certain
+amount, termed a premium, in advance to get health insurance
+(2][3][4]. In the event of a covered medical emergency, the
+insurer will either offer cashless care or reimburse
+policyholders for costs paid at any of the participating
+hospitals nationwide [5]. A new and exciting service industry
+is emerging: medical health insurance [6][7]. Unfortunately,
+this has also led to an increase in fraudulent health insurance
+claims [8]. Fraudulent claims are a significant concern for
+insurance companies as this leads to financial losses and can
+also have a detrimental effect on the quality of care that
+patients receive [9]. Health insurance scams appear through
+different types of actions, such as submitting invalid
+healthcare service claims or charging excessive sums with
+billing for excessive costs or unnecessary medical treatment
+[10]. The growing complexity of healthcare presents new
+obstacles for insurance firms to detect false healthcare bill
+submissions [11].
 
-each person
-each accident
+979-8-3315-0775-6/25/$31.00 ©2025 IEEE
 
-AUTO 1
-2013 HOND
-95.94
+Data mining, ML, and DL are all operational research
+technologies that have recently evolved dramatically, greatly
+benefiting many industries, including the financial industry.
+The fight against fraud is one of the key areas where these
+technologies have shown to be invaluable [12]. The healthcare
+industry faces extensive financial losses through fraud
+activities, together with violations that harm the healthcare
+system's integrity [13]. Healthcare organizations need ML
+integration in their fraud detection systems for effective
+solutions to present challenges. Analyzing data and using
+various types of artificial neural networks offer healthcare
+organizations better opportunities to monitor instances of
+fraud. The implementation of preventive measures using ML
+systems reduces financial losses while maintaining proper
+allocation of scarce resources to authentic patient care [14].
+Advanced technological solutions enable healthcare entities to
+achieve higher accuracy and faster real-time operations
+through scalable methods that keep fraud attacks at bay
+efficiently [15]. Research explores machine learning
+applications which detect health insurance fraud in order to
+create better methods for healthcare system efficiency and
+accuracy improvement.
 
-Property Damage 100,000
+A. Motivation and Contribution of the Study
 
-each accident
+Health insurance claims that are fraudulent present a
+significant concern since they result in monetary losses and
+undermine the quality of healthcare service. The rise in
+healthcare system complexity surpasses the ability of
+traditional defraud detection approaches to handle current
+challenges. The ability to detect fraudulent claims quickly
+becomes possible through a combination of data mining and
+ML as promising methods. This investigation intends to
+implement these technologies to detect fraudulent conduct and
+cut losses while ensuring fair resource distribution in order to
+enhance healthcare service integrity. The key contribution of
+this study is listed below:
 
-113.93
+e Fraud Detection Framework — The study develops a
+structured methodology for healthcare insurance fraud
+detection, integrating data preprocessing, exploratory
+data analysis (EDA), feature selection, and machine
+learning-based classification.
 
-. MEDICAL PAYMENTS 2,000
+e Addressing Class Imbalance — The research effectively
+tackles the issue of imbalanced fraud data using the
+ADASYN synthetic sampling method, ensuring a
+more representative training dataset for better fraud
+detection.
 
-each person
+e¢ Comparative Model Performance Analysis — A
+thorough evaluation of Decision Tree, Random Forest,
+and Extra Trees classifiers is conducted using
+accuracy, precision, recall, and  Fl-score,
 
-8.00
 
-*
+demonstrating that ensemble techniques provide
+superior detection capabilities.
 
-. UNINSURED MOTORISTS
-Bodily Injury
+e Feature Engineering for Fraud Identification — Mutual
+information-based feature selection is applied to
+enhance model efficiency by identifying the most
+relevant fraud indicators, improving classification
+accuracy.
 
-each person
-each accident
+e Enhanced Fraud Detection Accuracy — The Extra
+Trees classifier achieves the highest fraud detection
+accuracy (96.00% on test data), outperforming
+traditional methods like Logistic Regression and
+XGBoost, confirming the effectiveness of ensemble
+learning techniques.
 
-TY TA] Wt] 2] 1
+e Scalability for Real-World Deployment — The
+proposed approach offers a scalable and practical fraud
+detection solution that can be integrated into real-
+world healthcare insurance systems to reduce financial
+losses and improve fraud prevention.
 
-Property Damage
+B. Structure of paper
 
-each accident
+The organization of a document is as follows: Section 2
+reviews earlier research in the field of detecting health
+insurance fraud. The methods and procedures used in this
+study are described in Section 3. The obtained results are
+examined in Section 4. Section 5 concludes by summarizing
+the study's conclusions and outlining potential directions for
+further investigation.
 
-. DAMAGE TO YOUR AUTO (ACV means Actual Cash Value)
+Il. LITERATURE REVIEW
 
-1. Collision Loss AUTO 1
-ACV minus deductible of $1000
+This section examines previous research in healthcare
+insurance fraud detection and presents a detailed description
+of the literature review displayed in Table I.
 
-2. Other Than Collision Loss AUTO 1
-ACV minus deductible of $1000
+El-Enen et al. (2024) purpose is to develop an advanced
+technique for fraud detection that use a majority voting
+mechanism. The findings indicate that fraud detection has
+markedly enhanced across all activity tiers (doctor, provider,
+and patient), with patient model attaining 79% accuracy [16].
 
-TOWING AND LABOR COSTS §
+Mardani and Moradi (2024) propose a healthcare provider
+fraud detection model that applies the effect of the parties’
+interdependencies on the claims data. This data, when
+combined with other variables, may reveal intricate fraud
+practices. They tested their approach on the healthcare
 
-each disablement
+provider fraud detection dataset and reached 0.56 recall
+compared to the best available approaches, such as GTN with
+0.5 and XGBoost with 0.46 recall [17].
 
-EXTENDED TRANSPORTATION EXPENSES
-AUTO 1
+Cherkaoui, Anoun and Maizate (2024) carried out under
+the oversight of insurance industry professionals, assessed the
+outcomes and supplied the fraud label inference criteria. The
+findings demonstrate that supervised classification is a
+powerful tool for detecting health insurance fraud, with a 4.2-
+fold improvement in detection accuracy (84% recall for a 20%
+positive rate) [18].
 
-$3 0DAY/$900MAX
+Nabrawi and Alanazi (2023) implemented models that
+included ANNs, LR, and RF. Dataset adequacy was facilitated
+by using the SMOT method. They used Boruta object feature
+selection to filter out irrelevant characteristics. Results from
+ANN showed a 96.08% recall rate, a 97.03% F1 score, 80%
+specificity, and an 88.04% AUC. Accuracy was 94.64% [19].
 
-INCREASED
+Rath and Panigrahi (2023) study conducts a
+comprehensive comparison of several supervised learning
+approaches, including Logistic Regression (LR), Decision
+Trees (DT), Random Forests (RF), Support Vector Machines
+(SVM), and Artificial Neural Networks (ANN). The Random
+Forest approach attained the highest results with an impressive
+mean accuracy rate of 93.83% [20].
 
-* COMBINED UNINSURED/UNDERINSURED MOTORISTS
+Ill. METHODOLOGY
 
-POLICY LIMITS
+The proposed methodology for designing an intelligent
+fraud detection system for healthcare insurance claims
+involves multiple stages, including data preprocessing, EDA,
+feature selection, and model training using machine learning
+techniques. The research begins by collecting the 'Healthcare
+Provider Fraud Detection’ dataset by Kaggle's repository.
+Initially, the dataset is cleaned by merging relevant files,
+dropping unnecessary columns, and imputing missing values
+using the KNN imputer. Feature scaling is performed with
+Robust Scaler, and mutual information is employed for feature
+selection. To address the class imbalance, the ADASYN
+method is applied for data augmentation. EDA includes
+visualizations such as count plots, target distribution, fraud
+prevalence by gender, correlation heatmaps, and feature
+importance graphs. The dataset is then partitioned into training
+(80%) and testing (20%) sets, with the independent features
+(X) and the target variable (‘Class’) properly defined.
 
-$100,000/$300,000 BODILY INJURY
-$100,000 PROPERTY DAMAGE
+TABLE I. SUMMARY OF THE RELATED WORK ON MEDICAL HEALTH INSURANCE USING MACHINE LEARNING
 
-POLICY PREMIUM $20.00
+Reference Methodology Results & Analysis Advantages Limitations Future Work
+M. El-Enen | Integrated multiple | Improved fraud detection | Effective clustering | Requires further | Explore —_ additional
+et al. (2024) | unsupervised ML algorithms | across doctors, providers, | and anomaly detection | validation on | ML techniques and
 
-$100,000 each person / $300,000 each accident
+using a majority voting | and patients, with patient | align with human | different datasets hybrid approaches
 
-GARAGING LOCATION
-1-IN GARAGE
+mechanism model reaching 79% | expert judgments.
 
-UNINSURED/UNDERINSURED MOTORISTS - POLICY PREMIUM
+precision
+Mardani Used latent interdependency | Achieved 0.56 __ recall, | Identifies complex | Recall can be | Integrate with deep
+and Moradi | of claim parties in fraud | outperforming GTN (0.5) | fraud patterns using | improved further learning models for
+(2024) detection and XGBoost (0.46) interdependencies enhanced detection
+Cherkaoui, | Supervised classification | Attained 84% recall with a | Expert-guided Depends on expert- | Extend to other types
+Anoun and | guided by insurance experts | 20% positive rate, enhancing | approach enhances | defined rules, which | of fraud and refine
+Maizate with fraud label inference | detection accuracy by a | credibility and | may be biased inference rules
+(2024) rules. factor of 4.2. robustness
+Nabrawi Used RF, LR, and ANN with | ANN achieved 94.64% acc, | High accuracy and | Limited to a specific | Scale model to larger
+and Alanazi | SMOT for balancing and | 98% prec, 96.08% rec, and | effective feature | dataset; requires | datasets and improve
+(2023) Boruta for feature selection AUC of 88.04% selection testing on larger | generalizability
+datasets
 
-TOTAL COST
+Rath and | Combined correlation-based | RF achieved highest | Comprehensive Requires more feature | Optimize feature
+Panigrahi and forward feature selection | accuracy of 93.83% comparison of | engineering for better | selection and test on
+(2023) with supervised learning algorithms improves | performance diverse datasets
 
-20.00
-365.87
+(LR, DT, RF, SVM, ANN) understanding
+
+
+Performance measures, including acc, prec rec, and f-
+measure, are used to train and assess three ML models:
+Decision Tree, Random Forest, and Extra Trees. The flow of
+the implementation process is illustrated in Figure 1.
+
+The following segment provides a deep description of this
+methodology, which is also shown in Figure 1:
+
+A. Data Collection
+
+The Healthcare Provides Fraud Detection Dataset has been
+utilized in this study, which was obtained from Kaggle's
+repository and consists of 175,866 records and 39 features.
+The dataset has 4 categories: Inpatient claims, which contain
+data on patients who are admitted to the hospital; Outpatient
+claims, which contain patients who weren't admitted to the
+hospital; the beneficiary with details from each claimant; and
+the final dataset, which contains the label. Meanwhile, each
+dataset has unique IDs within each column, which were
+utilized to link the datasets. The dataset was chosen as it
+provides a wide range of information regarding the provider
+and patient claims, which includes a variety of information,
+including patient information, doctors, and providers, which
+could be used to find potential correlations between these
+factors, which could indicate potential health insurance fraud.
+
+.
+. Recall
+
+. Precision
+. Fl-score
+
+Fig. 1. Proposed flowchart for intelligent fraud detection system for
+healthcare insurance claims
+
+Fig. 2. Correlation Heatmap of features
+
+Figure 2 presents a heatmap of the correlation matrix,
+which demonstrates how different features in the dataset relate
+to each other. The intensity of color reflects correlation
+strength through its saturation and indicates positive and
+negative relationships by light or dark — shades.
+"InscClaimAmtReimbursed" moderately correlates with
+"DeductibleAmtPaid," suggesting higher claims align with
+higher deductibles. Negative correlations, though weaker,
+exist between some chronic conditions and demographics.
+The heatmap aids in identifying multicollinearity, guiding
+feature selection and model development for fraud detection.
+
+B. Data Preprocessing
+
+The dependability and caliber of datasets significantly rely
+on the efficacy of their preparation procedures[21]. Data
+preprocessing starts by checking the dataset shape to
+understand its structure. If split across multiple files, are
+merged for consistency. Irrelevant columns are dropped to
+reduce noise and improve efficiency. Missing values are
+handled using KNN imputer, preserving data integrity. The
+head() function give a quick preview of data, and info()tell
+column types and the presence of missing values. Finally,
+describe()give statistical insights, detect outliers, and guide
+feature transformations for more investigated performance of
+the model.
+
+C. Feature engineering
+
+Feature engineering (i.e., converting raw data into useful
+inputs) greatly helps improve model performance. Second, in
+order to handle the outliers and standardize the feature values
+that use Robust Scaler to scale data as feature engineering.
+
+1) Feature Scaling
+
+Using the Robust Scaler Method: Feature scaling is
+essential to normalize the data and bring all numerical features
+to a similar scale. The data is scaled using the median and
+interquartile range instead of the mean and standard deviation
+via the Robust Scaler technique, which makes it resistant to
+outliers. The normalization procedure protects the learning
+process of the model from becoming affected by extreme
+values. The Equation (1) of Robust Scaler is:
+
+Xnew = “median o)
+
+X_new denotes the scaled value, X is an original feature,
+X_median is median, and IQR (Interquartile Range) is used
+for normalization, making Robust Scaler resistant to outliers.
+
+2) Feature Selection
+
+The issue of feature selection is becoming important in the
+ML community. In feature selection issues, finding subsets of
+important traits that can stand in for whole classes of
+characteristics is the primary goal. Since the mutual
+information technique captures both linear and nonlinear
+correlations, it is ideal for feature selection in this research. It
+quantifies the dependence between each feature and the target
+variable.
+
+Feature Importance based on Mutual Information
+
+Fig. 3. Feature Importance with Mutual Information
+
+Figure 3 illustrates feature importance based on Mutual
+Information scores, ranking features by their relevance to
+fraud detection. "Provider" shows the highest dependency,
+followed by "Attending Physician" and
+"DeductibleAmtPaid.". Key factors include chronic
+conditions, claim amounts, and demographics like age and
+gender. In contrast, "ClaimStartDt," "ClaimEndDt," and
+"DOD" exhibit lower relevance. This ranking aids feature
+selection, emphasizing the most informative predictors for
+fraud detection.
+
+3) Data Balancing
+
+In order to increase the overall performance of predictive
+models and decrease model skewness, data balancing is a
+crucial task [22]; for this purpose, ADASYN technique of data
+balancing was employed. ADASYN not only generates
+synthetic samples for the minority class but also focuses on
+difficult-to-learn examples, thereby improving model's ability
+to recognize and classify underrepresented data.
+
+Class Distribution Before and After Balancing
+
+EE Before Balancing
+EEE After Balancing
+
+300000
+250000
+200000
+
+150000
+
+Class Counts
+
+100000
+
+50000
+
+°
+
+0.2 2.0 oz 0.4 oe Lo 12
+
+Fig. 4. Class distribution before and after balancing
+
+Figure 4 illustrates ADASYN's impact on class balancing.
+The "Before Balancing" bars show a stark class imbalance,
+while the "After Balancing" bars highlight the increased
+representation of the minority class. By generating synthetic
+samples, ADASYN improves model performance, reducing
+bias and enhancing fraud detection accuracy.
+
+D. Classification Models
+
+Here are several ML models that have been suggested for
+use in identifying fraudulent health insurance claims:
+
+1) Extra Trees (ET)
+
+A method for learning from ensembles is Extremely
+Randomized Trees, or Extra-Trees [23][24]. The Extra-Trees
+method builds a set of unpruned decision trees using the
+conventional top-down approach. There are two key
+distinctions with earlier ensemble methods that relied on trees:
+first, the nodes are randomly partitioned using cut points. As
+an alternative to employing a bootstrap replica, it builds the
+trees from the whole training set. Supplemental trees are a
+great way to reduce computing complexity while improving
+
+precision by averaging the randomized forecasts of decision
+trees [25]. The mathematical computation of extra trees is
+shown below in Equation (2):
+
+F(X) = SDE he (X) (2)
+Where:
+
+e The total count of trees in the ensemble is denoted by
+T.
+
+e h,(X) stands as the t-th tree's forecast,
+
+e f(X) is the final aggregated prediction (mean for
+regression, majority vote for classification)
+
+2) Random Forest (RF)
+
+There are supervised ML methods that use individual DT,
+and one of them is random forest [26]. Classification issues
+are common applications of this approach. A popular method
+for dealing with classification issues, random forest achieves
+better accuracy over cross-validation. This classifier
+maintains a high level of accuracy for a large chunk of the data
+while handling missing values. The random forest approach is
+frequently used in machine learning since it is simple and easy
+to use [27].
+
+3) Decision Tree (DT)
+
+Decision trees are algorithms that resemble flowcharts.
+Several branches originate at a single node, and branches link
+the nodes together. Leaf is the standard term for a node that
+does not have any connections. The nodes in a decision tree
+stand for feature tests. The branching go down is determined
+by the results of this exam. Once get to a leaf (the last note),
+you repeat the procedure many times. The leaf stands for the
+anticipated amount. In a quantitative answer, this can take the
+form of a predicted variable or a categorization. The
+metabolite-related test with the split point is located on a
+nonend node. A single metabolite is tested, and the result
+determines which branch to divert to. In the case that one
+follows the node to its last note, the note will include a
+prediction for a certain item [28].
+
+E. Model Evaluation
+
+To learn a model's practical use, model assessment is
+essential. It predicts the model's future performance on new
+data, with varied scores representing the model's various
+attributes [29]. Several measures were used to evaluate the
+models' performance in this study, such as the confusion
+matrix, acc, rec, and f-measure. Accuracy is the proportion of
+cases for which predictions were accurate. Recall represents
+the proportion of relevant cases for which a prediction is
+accurate. Precision metric measures how often, out of every
+possible instance, are projected to be of a specific class. F1-
+score is defined as the harmonic mean of Precision and Recall.
+The confusion matrix is a square matrix of size N x N,
+representing the number of output classes employed in this
+study to evaluate the performance matrix. Confusion matrices
+also offer an insightful and detailed technique for evaluating
+classifier performance [30].
+
+e TN (True Negative): Counts the amount of accurately
+detected negative instances.
+
+e TP (True Positive): Gives total amount of correctly
+identified affirmative cases
+
+e FP (False Positive): Counts the amount of false
+positives that were really negative
+
+e EN (False Negative): This metric shows how many
+positive cases were wrongly labeled as negative.
+
+ROC: In statistics, a Receiver Operating Characteristic
+(ROC) curve shows how well a classification model is doing.
+At different threshold settings, it displays the True Positive
+Rate (TPR), also known as sensitivity or recall, versus the
+False Positive Rate (FPR) . In essence, it shows that a model
+can distinguish between positive and negative categories for
+the sake of classification.
+
+IV. RESULT ANALYSIS AND DISCUSSION
+
+This segment illustrates models' performance on the
+Healthcare provider fraud detection dataset, which underpins
+this analysis. The experimental results were performed on a
+Python programming language with Sk-learn library that runs
+on an HP laptop Intel 17 Core 8Th generation with 32GB
+RAM. Experimental evidence substantiates the effectiveness
+of the suggested framework, which encompasses depictions of
+essential performance criteria. The results of the suggested
+models ET, RF, and DT are presented in Table II, which
+compares significant performance metrics of training and
+testing data against several benchmarks. Visual
+representations accompany the table to elucidate significant
+conclusions derived from the data analysis. A variety of
+alternative models, including XGB and LR models, are
+compared with the proposed framework in Table III. The
+investigation demonstrates that the suggested technique
+surpasses alternative methodologies regarding performance
+and dependability.
+
+TABLE II. PROPOSED MODELS PERFORMANCE OF TRAIN AND TEST
+HEALTH PROVIDER FRAUD DETECTION DATASET
+
+Models Data Accuracy | Precision | Recall | Fl-score
+ET ‘Training’ 99.97 99.97 99.98 99.97
+‘Testing’ 96.00 95.74 96.30 96.02
+RF ‘Training’ 1.00 1.00 1.00 1.00
+‘Testing’ 95.10 92.59 98.07 95.25
+DT ‘Training’ 1.00 1.00 1.00 1.00
+‘Testing’ 93.32 93.46 93.17 93.31
+
+Extra Treee(Testing Result) - Confusion Matrix
+
+stra Tese(Tasting Rests} ROC Curve
+
+Fig. 5. ROC curve and Confusion Matrix of ET
+
+Based on the left ROC curve, the Extra Trees model
+performs flawlessly in Figure 5, achieving an AUC value of
+1.0 for classification. A proper analysis of the model reveals
+30,249 true negatives along with 30,307 correct predictions
+for fraudulent cases, thus showcasing notable precision.
+According to the confusion matrix, the model classified 1,359
+instances as fraudulent when they were valid and 1,171
+instances as non-fraudulent when they were actually
+fraudulent.
+
+Random Forest Testing Resuts}- ROC Curve
+
+fandom Forest Testing Results) - Confusion Matis
+
+Fig. 6. ROC curve and Confusion Matrix of RF
+
+In Figure 6, the Random Forest model demonstrates
+exceptional classification aptitude based on its left-side “ROC
+curve’’ presented with an ‘AUC’’ of 0.99. The right-hand
+confusion matrix presents specific classification data, which
+shows both 29,121 correctly identified false cases (true
+negatives) and 31,067 properly detected fraudulent cases (true
+positives). The model became responsible for 2,487 false
+positives, which meant misidentifying fraud, and 611 false
+negatives, which involved missing genuine cases of fraud.
+
+Figure 7 demonstrates that the Decision Tree model
+exhibits outstanding classification capability, as seen by its
+left-side ROC curve with an AUC of 0.93. The right-hand
+confusion matrix displays classification data indicating
+29,542 accurately recognized false instances (true negatives)
+and 29,514 correctly detected fraudulent cases (true positives).
+The model was accountable for 2,066 false positives, resulting
+in the misidentification of fraudulent cases and 2,164
+erroneous negatives, leading to the oversight of authentic
+instances of fraud.
+
+Decision tree(Testing Results) - ROC Curve
+
+Decision Tre( Testing Results) - Confusion Matrix
+
+Fig. 7. ROC curve and Confusion Matrix of DT
+
+TABLE III. COMPARISON BETWEEN PROPOSED AND OTHER MODELS FOR
+FRAUD DETECTION IN HEALTH INSURANCE CLAIMS,
+
+Models Accuracy Precision Recall | Fl-score
+LR[31] 90.0 93.0 91.0 90.0
+XGB[32] 91.74 97.34 80.43 88.08
+DT 93.32 93.46 93.17 93.31
+RE 95.10 92.59 98.07 95.25
+ET 96.00 95.74 96.30 96.02
+
+The comparison of various models for fraud detection in
+health insurance claims reveals notable differences in
+performance across key evaluation metrics, as shown in Table
+III. Logistic Regression (LR) achieves an acc of 90.0%, with
+prec at 93.0%, rec at 91.0%, and an f-measure of 90.0%,
+indicating a balanced performance but slightly lower recall.
+XGBoost (XGB) improves acc to 91.74%, with a significantly
+high prec of 97.34%, but a lower rec at 80.43%, leading to an
+Fl-score of 88.08%, showing that while it is highly precise, it
+struggles to identify all fraudulent cases. Decision Tree (DT)
+achieves 93.32% accuracy, with precision at 93.46%, recall at
+93.17%, and an Fl-score of 93.31%, providing a well-
+balanced classification. Random Forest (RF) further improves
+performance with 95.10% acc, prec of 92.59%, and an
+excellent rec of 98.07%, resulting in a high f-measure of
+95.25%, making it highly effective in detecting fraudulent
+claims. The Extra Trees model delivers the best results for
+detecting insurance claim fraud with its 96.00% ace and
+corresponding prec of 95.74% and rec of 96.30% and f-
+measure of 96.02%. This establishes the model as a top
+performer for health insurance claim fraud diagnosis.
+
+V. CONCLUSION AND FUTURE SCOPE
+
+A new machine learning framework effectively detects
+healthcare insurance fraud with solutions to solve class
+
+imbalance difficulties and identify significant features. A
+comparative evaluation of Decision Tree, Random Forest, and
+Extra Trees classifiers reveals that the Extra Trees model
+outperforms others with a detection acc of 96%, prec of
+
+95.74%, rec 0:
+
+96.30% and f-measure of 96.02%. Ensemble
+
+learning proves effective for fraud detection, according to the
+findings, which provides insurance providers with a useful
+and scalable solution to reduce financial losses. Despite its
+effectiveness, this study has certain limitations. The dataset
+
+used may not
+
+ully represent real-world fraud patterns due to
+
+potential biases in historical records. Although the Extra Trees
+model was quite accurate, real-time fraud detection would be
+difficult due to its computational complexity. The study also
+primarily focuses on structured data, limiting its applicability
+to unstructured claim documents. Future contributions of this
+research could focus on enhancing fraud detection using deep
+
+10]
+
+11]
+
+12]
+
+learning models like LSTMs and transformers for improved
+pattern recognition. Additionally, integrating real-time fraud
+detection with blockchain technology could enhance data
+security and transparency. Further studies could explore
+explainable
+interpretability,
+patterns better. Expanding the dataset with multi-source
+healthcare claims and testing models in real-world scenarios
+would enhance generalizability, making fraud detection
+systems more robust and scalable.
+
+AI (XAI)
+helping
+
+techniques to
+stakeholders
+
+improve model
+understand fraud
+
+REFERENCES
+
+V. Kolluri, “Revolutionizing Healthcare Delivery: The Role of AI and
+Machine Learning in Personalized Medicine and Predictive Analytics,”
+Well Test. J., vol. 33, no. 02, 2024.
+
+N. Abid, “Improving Accuracy and Efficiency of Online Payment
+Fraud Detection and Prevention with Machine Learning Models,” Jnt.
+J. Innov. Sci. Res. Technol., vol. 9, no. 12, pp. 711-723, 2024.
+
+Suhag Pandya, “Integrating Smart IoT and AI-Enhanced Systems for
+Predictive Diagnostics Disease in Healthcare,” Int. J. Sci. Res. Comput.
+Sci. Eng. Inf. Technol., vol. 10, no. 6, pp. 2093-2105, Dec. 2023, doi:
+10.32628/CSEIT24 10612406.
+
+H. Sinha, “An examination of machine learning-based credit card fraud
+detection systems,” Int. J. Sci. Res. Arch., vol. 12, no. 01, pp. 2282—
+2294, 2024, doi: https://doi.org/10.30574/ijsra.2024.12.2.1456.
+
+A. Singh and R. R. Singh, “A Study of Health Insurance in India,” Jnt.
+J. Manag. IT Eng., vol. 10, no. April, p. 4, 2020.
+
+Sagar Bharat Shah, “Improving Financial Fraud Detection System with
+Advanced Machine Learning for Predictive Analysis and Prevention,”
+Int. J. Sci. Res. Comput. Sci. Eng. Inf. Technol., vol. 10, no. 6, pp.
+2451-2463, Nov. 2024, doi: 10.32628/CSEIT24861 147.
+
+Saurabh A Pahune, “A Brief Overview of How AI Enables Healthcare
+Sector Rural Development,” 2024, doi:
+10.13140/RG.2.2.16675.63525.
+
+M. Shah, P. Shah, and S. Patil, “Secure and Efficient Fraud Detection
+Using Federated Learning and Distributed Search Databases,” in 2025
+IEEE 4th International Conference on AI in Cybersecurity (ICAIC),
+2025, pp. 1-6. doi: 10.1109/ICAIC63015.2025.10849280.
+
+M.R. S. and P. K. Vishwakarma, “The Assessments of Financial Risk
+Based on Renewable Energy Industry,” Int. Res. J. Mod. Eng. Technol.
+Sci., vol. 06, no. 09, pp. 758-770, 2024.
+
+M. T. Arora, Rajeev and Kumar, Shantanu and Jain, Nitin and Nafis,
+“Revolutionizing Healthcare with Cloud Computing: Superior Patient
+Care and Enhanced Service Efficiency,” SSRN, 2022, doi:
+http://dx.doi.org/10.2139/ssrn.4957197.
+
+S. Tyagi, T. Jindal, S. H. Krishna, S. M. Hassen, S. K. Shukla, and C.
+Kaur, “Comparative Analysis of Artificial Intelligence and its Powered
+
+Technologies Applications in the Finance Sector,” in Proceedings of
+
+5th International Conference on Contemporary Computing and
+Informatics, IC3I 2022, 2022. doi:
+10.1109/IC3156241.2022.10073077.
+
+R. Arora, S. Gera, and M. Saxena, “Impact of Cloud Computing
+Services and Application in Healthcare Sector and to provide improved
+quality patient care,” JEEE Int. Conf. Cloud Comput. Emerg. Mark.
+
+20)
+
+21
+
+22
+
+23
+
+24
+
+25
+
+26
+
+27
+
+28
+
+29
+
+30
+
+31
+
+32
+
+(CCEM), NJ, USA, 2021, pp. 45-47, 2021.
+V. Kolluri, “An Innovative Study Exploring Revolutionizing
+Healthcare with Al: Personalized Medicine: Predictive Diagnostic
+Techniques and Individualized Treatment,” J. Emerg. Technol. Innov.
+Res. (, vol. 3, no. 11, 2016.
+
+S. S. S. Neeli, “The Convergence of AI and Database Administration
+in Revolutionizing Healthcare,” ESP Int. J. Adv. Comput. Technol.,
+vol. 2, no. 4, pp. 150-153, 2024, doi: 10.56472/25838628/IJACT-
+‘V2I14P119.
+
+O. Joseph, K. E. Chirchi, B. Kavya, and P. Rai, “The Role of Machine
+Learning in Healthcare Fraud Monitoring,” no. December, 2024.
+M.A. A. El-Enen et al., “Fraud Detection in Medical Insurance Claims
+Using Majority Voting of Multiple Unsupervised Algorithms,”
+Procedia Comput. Sci., vol. 244, pp. 9-22, 2024, doi:
+10.1016/j.procs.2024.10.173.
+
+S. Mardani and H. Moradi, “Using Graph Attention Networks in
+Healthcare Provider Fraud Detection,” JEEE Access, vol. 12, pp.
+132786-132800, 2024, doi: 10.1109/ACCESS.2024.3425892.
+
+O. Cherkaoui, H. Anoun, and A. Maizate, “A benchmark of health
+insurance fraud detection using machine learning techniques,” JAES
+Int. J. Artif: Intell., vol. 13, no. 2, p. 1925, Jun. 2024, doi:
+10.1159 1/ijai-v13.i2.pp1925-1934.
+
+E. Nabrawi and A. Alanazi, “Fraud Detection in Healthcare Insurance
+Claims Using Machine’ Learning,” Risks, 2023, — doi:
+10.3390/risks1 1090160.
+
+S. Rath and S. Panigrahi, “Healthcare Insurance Fraud Prediction with
+Correlation based Forward Feature Selection,” in 2023 2nd
+International Conference on Ambient Intelligence in Health Care,
+ICAIHC 2023, 2023. doi: 10.1109/ICATHC59020.2023.10431444.
+
+S. Arora, S. R. Thota, and S. Gupta, “Artificial Intelligence-Driven Big
+Data Analytics for Business Intelligence in SaaS Products,” in 2024
+First International Conference on Pioneering Developments in
+Computer Science &amp; Digital Technologies (IC2SDT), IEEE, Aug.
+2024, pp. 164-169. doi: 10.1109/IC2SDT62152.2024.10696409.
+
+M. Mujahid et a/., “Data oversampling and imbalanced datasets: an
+investigation of performance for machine learning and feature
+engineering,” J. Big Data, vol. 11, no. 1, 2024, doi: 10.1186/s40537-
+024-00943-4.
+
+R. Dattangire, R. Vaidya, D. Biradar, and A. Joon, “Exploring the
+Tangible Impact of Artificial Intelligence and Machine Learning:
+Bridging the Gap between Hype and Reality,” in 2024 /st International
+Conference on Advanced Computing and Emerging Technologies
+(ACET), BEE, Aug. 2024, pp. 1-6. — doi:
+10.1109/ACET61898.2024.10730334.
+
+A. A. Hira Zainab, Ali Raza A Khan, Muhammad Ismaeel Khan,
+“Innovative AI Solutions for Mental Health: Bridging Detection and
+Therapy,” Glob. J. Emerg. AI Comput., vol. 1, no. 1, pp. 51-58, 2025.
+D. A. Otchere, “Fundamental error in tree-based machine learning
+model selection for reservoir characterisation,” Energy Geosci., 2024,
+doi: 10.1016/j.engeos.2023.100229.
+
+R. Tandon, “The Machine Learning Based Regression Models
+Analysis For House Price Prediction,” Int. J. Res. Anal. Rev., vol. 11,
+no. 3, pp. 296-305, 2024.
+
+B. Rakesh and S. Nayak, “Symptom-based diagnosis of diseases for
+primary health check-ups using biomedical text mining,” in Deep
+Learning in Personalized Healthcare and Decision Support, 2023. doi:
+10.1016/B978-0-443-19413-9.00023-0.
+
+J. Hageman, “Relevant metabolites’ selection strategies,” in
+Metabolomics Perspectives: From Theory to Practical Application,
+2022. doi: 10.1016/B978-0-323-85062-9.00010-6.
+
+A. Pretnar Zagar and J. Dem&ar, “Model Evaluation: How to
+Accurately Evaluate Predictive Models,” in Tourism on the Verge,
+2022. doi: 10.1007/978-3-030-88389-8_13.
+
+S. Sathyanarayanan and B. R. Tantri, “Confusion Matrix-Based
+Performance Evaluation Metrics,’ no. December, 2024, doi:
+10.53555/AJBR.v27i4S.4345.
+
+M. K. Al-Ghazi, R. Bertrand, M. D. Q. Destra, A. A. S. Gunawan, and
+K. E. Setiawan, “Classification of Health Insurance Fraud Risk with
+Machine Learning,” in 2024 International Conference on Information
+Technology Research and Innovation (ICITRI), YEEE, Sep. 2024, pp.
+24-29. doi: 10.1109/ICITRI62858.2024. 10699052.
+
+N.N. I. Prova, “Healthcare Fraud Detection Using Machine Learning,”
+2nd Int. Conf. Intell. Cyber Phys. Syst. Internet Things, ICoICI 2024 -
+Proc., no. ICoICI, pp. 1119-1123, 2024, doi:
+10.1109/ICoICI62503.2024. 10696476.
 

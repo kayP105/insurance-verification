@@ -8,6 +8,8 @@ import os
 import sys
 
 from models import Document
+from models import MockInsurerPolicy
+
 from db import engine, SessionLocal
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -376,13 +378,46 @@ def process_document(doc_id: int, file_path: str):
             db.refresh(doc)
             current_extracted = doc.extracted_json if doc.extracted_json else {}
             current_extracted["duplicate_check"] = duplicate_result
+
+# 🎯 REAL FRAUD SCORE (rule-based)
+            if duplicate_result.get("is_duplicate"):
+                current_extracted["fraud_score"] = 1.0
+                current_extracted["fraud_reason"] = "Duplicate claim submission"
+            elif not current_extracted.get("policy_is_active", True):
+                current_extracted["fraud_score"] = 0.9
+                current_extracted["fraud_reason"] = "Inactive policy used"
+            else:
+                current_extracted["fraud_score"] = 0.05
+                current_extracted["fraud_reason"] = "No major fraud indicators"
+
+           # 🔎 POLICY VERIFICATION (local check)
+            policy = db.query(MockInsurerPolicy).filter(
+                MockInsurerPolicy.policy_number == current_extracted.get("policy_no")
+            ).first()
+
+            if policy:
+                current_extracted["policy_is_active"] = policy.is_active
+                current_extracted["verification_status"] = "SUCCESS" if policy.is_active else "FAILED"
+                current_extracted["verification_reason"] = (
+                    "Policy is active" if policy.is_active else "Policy is not active"
+                )
+            else:
+                current_extracted["policy_is_active"] = False
+                current_extracted["verification_status"] = "FAILED"
+                current_extracted["verification_reason"] = "Policy not found in insurer database"
+
+
+
             doc.extracted_json = current_extracted
-            doc.status = "processed"  
+            doc.status = "processed"
+
+
             
             
             from sqlalchemy.orm.attributes import flag_modified
             flag_modified(doc, "extracted_json")
             
+
             db.commit()
             
             print(f"[DEBUG] ✓ Duplicate check saved: {duplicate_result}")

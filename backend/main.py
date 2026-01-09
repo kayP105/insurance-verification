@@ -72,7 +72,18 @@ class WorkflowRequest(BaseModel):
     claim_amount: float
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-  
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    payload = decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    email = payload.get("sub")
+    user = db.query(User).filter(User.email == email).first()
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    return user
 
 class UserCreate(BaseModel):
     username: str
@@ -97,11 +108,22 @@ async def rag_chat(request: Request):
 
 
 @app.post("/upload")
-def upload_document(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+def upload_document(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+
     db = SessionLocal()
     
    
-    new_doc = Document(filename=file.filename, local_path="", status="pending_upload")
+    new_doc = Document(
+    filename=file.filename,
+    local_path="",
+    status="pending_upload",
+    user_id=current_user.id
+    )
+
     db.add(new_doc)
     db.commit()
     db.refresh(new_doc)
@@ -119,7 +141,7 @@ def upload_document(background_tasks: BackgroundTasks, file: UploadFile = File(.
         shutil.copyfileobj(file.file, buffer)
     
     
-    new_doc.local_path = f"/uploads/{unique_filename}" 
+    new_doc.local_path = file_path
     new_doc.status = "pending_ocr" # 
     db.commit()
     
@@ -136,14 +158,28 @@ def get_status(doc_id: int, db: Session = Depends(get_db)):
     return {"id": doc.id, "filename": doc.filename, "status": doc.status, "data": doc.extracted_json}
 
 @app.get("/claims")
-def get_all_claims(db: Session = Depends(get_db)):
-    docs = db.query(Document).all()
+def get_all_claims(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    
+    if current_user.role == "agent":
+        docs = db.query(Document).all()
+    else:
+       
+        docs = db.query(Document).filter(
+            Document.user_id == current_user.id
+        ).all()
+
     claims = [
         {
             "id": d.id,
             "filename": d.filename,
             "status": d.status,
             "tamper_score": d.extracted_json.get("tamper_score") if d.extracted_json else None,
+            "fraud_score": d.extracted_json.get("fraud_score") if d.extracted_json else 0.0,
+            "fraud_label": d.extracted_json.get("fraud_label") if d.extracted_json else "LOW RISK",
+            "fraud_reason": d.extracted_json.get("fraud_reason") if d.extracted_json else "",
             "duplicates": d.extracted_json.get("duplicate_check", {}).get("similar_docs", []) if d.extracted_json else None,
             "agent_decision": d.agent_decision,
             "agent_notes": d.agent_notes,
@@ -152,9 +188,23 @@ def get_all_claims(db: Session = Depends(get_db)):
     ]
     return {"claims": claims}
 @app.get("/claims/{doc_id}")
-def get_claim_by_id(doc_id: int, db: Session = Depends(get_db)):
-    """Get single claim details by ID"""
-    doc = db.query(Document).filter(Document.id == doc_id).first()
+def get_claim_by_id(
+    doc_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+
+    if current_user.role == "agent":
+        doc = db.query(Document).filter(
+            Document.id == doc_id
+        ).first()
+    else:
+        doc = db.query(Document).filter(
+            Document.id == doc_id,
+            Document.user_id == current_user.id
+        ).first()
+
+
     
     if not doc:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -168,6 +218,8 @@ def get_claim_by_id(doc_id: int, db: Session = Depends(get_db)):
         "agent_notes": doc.agent_notes,
         "agent_decision": doc.agent_decision,
         "tamper_score": doc.extracted_json.get("tamper_score", 0.0) if doc.extracted_json else 0.0,
+        "fraud_score": doc.extracted_json.get("fraud_score", 0.0) if doc.extracted_json else 0.0,
+        "fraud_label": doc.extracted_json.get("fraud_label", "LOW RISK") if doc.extracted_json else "LOW RISK",
         "created_at": getattr(doc, 'created_at', None),
         "file_path": f"/uploads/{doc.filename}" if doc.filename else None
     }
@@ -390,10 +442,22 @@ async def predict_eligibility(request: EligibilityRequest):
 @app.post("/fraud_score")
 async def fraud_score(request: EligibilityRequest):
     try:
-        score = 0.2 if request.features.get("incident_severity") == "Total Loss" else 0.1
-        return {"risk_score": score, "is_anomaly": bool(score > 0.75)}
+        severity = request.features.get("incident_severity")
+
+        # DEMO LOGIC
+        if severity == "Total Loss":
+            score = 0.9   # high fraud risk
+        else:
+            score = 0.2
+
+        return {
+            "risk_score": score,
+            "is_anomaly": bool(score > 0.75)
+        }
     except Exception as e:
         return {"error": str(e)}
+
+
 
 @app.post("/process_full_claim")
 async def process_full_claim(request: WorkflowRequest, db: Session = Depends(get_db)):
@@ -443,6 +507,11 @@ async def process_full_claim(request: WorkflowRequest, db: Session = Depends(get
     
     fraud_response = await fraud_score(eligibility_req)
 
+    # 🚨 FORCE FRAUD IF DUPLICATE
+    if duplicate_check.get("is_duplicate"):
+        fraud_response["risk_score"] = 0.99
+        fraud_response["is_anomaly"] = True
+
     
     facts = {
         "policy_no": extracted_data.get("policy_no", "UNKNOWN"),
@@ -451,10 +520,17 @@ async def process_full_claim(request: WorkflowRequest, db: Session = Depends(get
         "policy_is_active": verify_response.get("policy_details", {}).get("is_active", False),
         "is_eligible": eligibility_response.get("is_eligible"),
         "ineligible_prob": eligibility_response.get("probability_ineligible"),
-        "fraud_risk_score": fraud_response.get("risk_score"),
-        "has_duplicates": duplicate_check.get("is_duplicate", False),  # ADD THIS
+
+        # 🚨 FRAUD ESCALATION LOGIC
+        "fraud_risk_score": 0.99 if (
+            duplicate_check.get("is_duplicate") or
+            not verify_response.get("policy_details", {}).get("is_active", True)
+        ) else fraud_response.get("risk_score"),
+
+        "has_duplicates": duplicate_check.get("is_duplicate", False),
         "decision": None
     }
+
     
     print("⚙️ Executing Rule Engine for:", facts)
     
@@ -510,6 +586,10 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     
     return {"username": new_user.username, "email": new_user.email, "role": new_user.role}
+@app.post("/contact_agent")
+def contact_agent(payload: dict, db: Session = Depends(get_db)):
+    print("📩 Message to agent:", payload)
+    return {"status": "sent"}
 
 @app.post("/token")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -534,19 +614,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         "username": user.username
     }
 
-
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    payload = decode_token(token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    
-    email = payload.get("sub")
-    user = db.query(User).filter(User.email == email).first()
-    
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    
-    return user
 
 @app.get("/protected-example")
 def protected_example(user: dict = Depends(get_current_user)):

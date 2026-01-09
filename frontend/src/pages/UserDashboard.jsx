@@ -317,8 +317,14 @@ const UserDashboard = () => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {claims.map((claim) => {
-                  const fraudScore = ((claim.tamper_score || 0) * 100).toFixed(1);
-                  const fraudColor = (claim.tamper_score || 0) > 0.7 ? '#EF4444' : (claim.tamper_score || 0) > 0.4 ? '#F59E0B' : '#10B981';
+                  const fraudValue = claim.fraud_score ?? 0;
+                  const fraudScore = (fraudValue * 100).toFixed(1);
+
+                  const fraudColor =
+                    fraudValue > 0.7 ? '#EF4444' :
+                    fraudValue > 0.4 ? '#F59E0B' :
+                    '#10B981';
+
                   const status = claim.agent_decision || claim.status || 'pending';
                   
                   return (

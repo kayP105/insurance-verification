@@ -12,6 +12,9 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     role = Column(String, default="user")  
     
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
 class Document(Base):
     __tablename__ = "documents"
     id = Column(Integer, primary_key=True, index=True)
@@ -21,6 +24,10 @@ class Document(Base):
     extracted_json = Column(JSON, nullable=True)
     agent_notes = Column(String)
     agent_decision = Column(String)
+
+    # 👇 NEW
+    user_id = Column(Integer, ForeignKey("users.id"))
+
 
 class MockInsurerPolicy(Base):
     __tablename__ = "mock_insurer_db"

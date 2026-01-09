@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import UserDashboard from './pages/UserDashboard';
 import AgentDashboard from './pages/AgentDashboard';
 import ClaimDetails from './pages/ClaimDetails';
+import ContactAgent from "./pages/ContactAgent";
+
 import Register from './pages/Register.jsx';
 import FraudGraph from './FraudGraph';
 import ShapExplainer from './ShapExplainer';
@@ -58,7 +60,16 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          
+          {/* User → Contact Agent */}
+          <Route 
+            path="/contact-agent/:id" 
+            element={
+              <ProtectedRoute>
+                <ContactAgent />
+              </ProtectedRoute>
+            } 
+          />
+
           {/* Agent-only Features */}
           <Route 
             path="/fraud-graph" 
@@ -77,6 +88,8 @@ function App() {
               </ProtectedRoute>
             } 
           />
+  
+
           
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

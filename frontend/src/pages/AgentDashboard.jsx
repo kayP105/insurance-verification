@@ -28,7 +28,13 @@ const AgentDashboard = () => {
 
   const fetchAllClaims = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/claims');
+      const token = localStorage.getItem("token");
+      const response = await axios.get('http://localhost:8000/claims', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
       const claimsData = response.data.claims || [];
       setClaims(claimsData);
 
@@ -44,11 +50,13 @@ const AgentDashboard = () => {
         approved: approved,
         rejected: rejected,
         highRisk: claimsData.filter(c => 
-          (c.tamper_score || 0) >= 0.6 || (c.duplicates && c.duplicates.length > 0)
-        ).length, 
+          (c.fraud_score || 0) >= 0.7
+        ).length,
+        
         avgFraudScore: claimsData.length > 0
-          ? (claimsData.reduce((sum, c) => sum + (c.tamper_score || 0), 0) / claimsData.length) * 100
+          ? (claimsData.reduce((sum, c) => sum + (c.fraud_score || 0), 0) / claimsData.length) * 100
           : 0
+
       });
 
 
@@ -59,7 +67,9 @@ const AgentDashboard = () => {
       ];
 
       claimsData.forEach(claim => {
-        const score = (claim.tamper_score || 0) * 100;
+        const score = Math.min((claim.fraud_score || 0) * 100, 100);
+
+
         if (score < 30) fraudScoreRanges[0].value++;
         else if (score < 60) fraudScoreRanges[1].value++;
         else fraudScoreRanges[2].value++;
@@ -128,7 +138,7 @@ const AgentDashboard = () => {
       claim.filename || 'Unknown',
       'Document',
       new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      `${((claim.tamper_score || 0) * 100).toFixed(1)}%`,
+     `${Math.min((claim.fraud_score || 0) * 100, 100).toFixed(1)}%`,
       claim.agent_decision || claim.status || 'Processed'
     ]);
 
@@ -420,6 +430,7 @@ const AgentDashboard = () => {
                     <th style={tableHeaderStyle}>TYPE</th>
                     <th style={tableHeaderStyle}>DATE</th>
                     <th style={tableHeaderStyle}>FRAUD SCORE</th>
+                    <th style={tableHeaderStyle}>FRAUD REASON</th>
                     <th style={tableHeaderStyle}>DUPLICATE</th>  {/* ADD THIS */}
                     <th style={tableHeaderStyle}>STATUS</th>
                     <th style={tableHeaderStyle}>ACTIONS</th>
@@ -429,10 +440,15 @@ const AgentDashboard = () => {
                 <tbody>
                   {claims.map((claim, index) => {
                     const isDuplicate = claim.duplicates && claim.duplicates.length > 0;
-                    const baseFraudScore = (claim.tamper_score || 0) * 100;
-                    // Boost visual score if duplicate detected
-                    const fraudScore = isDuplicate ? Math.min(baseFraudScore + 20, 100) : baseFraudScore;
-                    const fraudColor = fraudScore > 70 ? '#EF4444' : fraudScore > 40 ? '#F59E0B' : '#10B981';
+
+                    // use backend fraud score ONLY
+                    const fraudScore = Math.min((claim.fraud_score || 0) * 100, 100);
+
+                    const fraudColor =
+                      fraudScore > 70 ? '#EF4444' :
+                      fraudScore > 40 ? '#F59E0B' :
+                      '#10B981';
+
                     
                     return (
                       <tr key={claim.id} style={{
@@ -504,7 +520,25 @@ const AgentDashboard = () => {
                             </span>
                           </div>
                         </td>
-                        
+                        <td style={tableCellStyle}>
+                          {claim.fraud_reason ? (
+                            <span style={{
+                              background: '#FEF2F2',
+                              color: '#991B1B',
+                              padding: '6px 10px',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              fontWeight: '600'
+                            }}>
+                              {claim.fraud_reason}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#10B981', fontSize: '13px' }}>
+                              No issues
+                            </span>
+                          )}
+                        </td>
+
                         {/* NEW DUPLICATE COLUMN */}
                         <td style={tableCellStyle}>
                           {isDuplicate ? (

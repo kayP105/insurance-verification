@@ -12,17 +12,21 @@ const ClaimDetails = () => {
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [userRole, setUserRole] = useState(null);
+  const token = localStorage.getItem("token");
 
   const fetchClaimDetails = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/claims/${id}`);
+      const response = await axios.get(`http://localhost:8000/claims/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       setClaim(response.data);
     } catch (error) {
       console.error('Failed to fetch claim details:', error);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id,token]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -103,8 +107,12 @@ const handleReject = async () => {
     );
   }
 
-  const fraudScore = claim.tamper_score || 0;
-  const fraudLevel = fraudScore > 0.7 ? 'HIGH' : fraudScore > 0.4 ? 'MEDIUM' : 'LOW';
+  const fraudScore = claim.fraud_score ?? 0;
+
+  const fraudLevel =
+    fraudScore > 0.7 ? 'HIGH' :
+    fraudScore > 0.4 ? 'MEDIUM' : 'LOW';
+
   const fraudColor = fraudScore > 0.7 ? '#EF4444' : fraudScore > 0.4 ? '#F59E0B' : '#10B981';
 
   return (
@@ -226,6 +234,36 @@ const handleReject = async () => {
             </div>
           </div>
 
+            {/* Policy Verification Status */}
+            <div style={{
+              marginTop: '24px',
+              padding: '16px',
+              borderRadius: '8px',
+              background: claim.extracted_json?.policy_is_active ? '#ECFDF5' : '#FEF2F2',
+              border: claim.extracted_json?.policy_is_active ? '1px solid #A7F3D0' : '1px solid #FECACA'
+            }}>
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: '700',
+                marginBottom: '8px',
+                color: claim.extracted_json?.policy_is_active ? '#065F46' : '#991B1B'
+              }}>
+                Policy Verification
+              </h3>
+
+              <p style={{ margin: 0, fontSize: '14px' }}>
+                Status:{' '}
+                <strong>
+                  {claim.extracted_json?.policy_is_active ? 'Active' : 'Inactive'}
+                </strong>
+              </p>
+
+              {!claim.extracted_json?.policy_is_active && (
+                <p style={{ marginTop: '6px', fontSize: '13px', color: '#7F1D1D' }}>
+                  Reason: {claim.extracted_json?.verification_reason || 'Policy is not active'}
+                </p>
+              )}
+            </div>
 
             {/* Fraud Analysis */}
             <div className="card">
@@ -286,8 +324,94 @@ const handleReject = async () => {
                 </div>
               </div>
             </div>
+            {/* Deatil logs */}
+            {userRole === 'agent' && (
+              <div className="card" style={{ marginTop: '20px' }}>
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  color: '#1E3A8A',
+                  marginBottom: '15px'
+                }}>
+                  Fraud Investigation Log
+                </h3>
+
+                <ul style={{ listStyle: 'none', padding: 0 }}>
+                  <li style={{ padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
+                    <strong>Fraud Score:</strong> {(fraudScore * 100).toFixed(1)}%
+                  </li>
+
+                  <li style={{ padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
+                    <strong>Fraud Reason:</strong> {claim.fraud_reason || 'N/A'}
+                  </li>
+
+                  <li style={{ padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
+                    <strong>Policy Active:</strong>{' '}
+                    {claim.extracted_json?.policy_is_active ? 'Yes' : 'No'}
+                  </li>
+
+                  {!claim.extracted_json?.policy_is_active && (
+                    <li style={{ padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
+                      <strong>Verification Reason:</strong>{' '}
+                      {claim.extracted_json?.verification_reason || 'Policy not active'}
+                    </li>
+                  )}
+
+                  <li style={{ padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
+                    <strong>Tamper Score:</strong>{' '}
+                    {claim.extracted_json?.tamper_score ?? 0}
+                  </li>
+
+                  <li style={{ padding: '8px 0' }}>
+                    <strong>Duplicate Check:</strong>{' '}
+                    {claim.extracted_json?.duplicate_check?.is_duplicate
+                      ? `YES (${claim.extracted_json.duplicate_check.duplicate_count} match)`
+                      : 'No'}
+                  </li>
+                </ul>
+              </div>
+            )}
+
+            {/* User Appeal Section */}
+            {fraudScore >= 0.7 && userRole=== 'user' && (
+              <div className="card" style={{
+                marginTop: '20px',
+                border: '1px solid #FECACA',
+                background: '#FEF2F2'
+              }}>
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  color: '#991B1B',
+                  marginBottom: '10px'
+                }}>
+                  Think this is incorrect?
+                </h3>
+
+                <p style={{ fontSize: '14px', color: '#7F1D1D', marginBottom: '15px' }}>
+                  Your claim was flagged as high fraud risk.  
+                  If you believe this is a mistake, you can reach out to an agent for review.
+                </p>
+
+                <button
+                  onClick={() => navigate(`/contact-agent/${id}`)}
+                  style={{
+                    background: '#EF4444',
+                    color: 'white',
+                    padding: '10px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Contact Agent
+                </button>
+              </div>
+            )}
 
             {/* RAG Chatbot */}
+            {userRole==='user' && (
             <div className="card">
               <h2 style={{
                 fontSize: '20px',
@@ -339,6 +463,7 @@ const handleReject = async () => {
                   ))
                 )}
               </div>
+            
 
               <div style={{ display: 'flex', gap: '10px' }}>
                 <input
@@ -371,7 +496,9 @@ const handleReject = async () => {
                 </button>
               </div>
             </div>
+            )}
           </div>
+          
 
           {/*Agent Sidebar */}
           <div>
